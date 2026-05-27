@@ -1,0 +1,109 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../data/auth_controller.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _phoneController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = ref.watch(authControllerProvider);
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('NestBuddy',
+                        style: Theme.of(context)
+                            .textTheme
+                            .displaySmall
+                            ?.copyWith(fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 8),
+                    Text(
+                        'Quick delivery for hardware, plywood, electrical, and plumbing essentials.',
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    const SizedBox(height: 32),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9+]'))
+                      ],
+                      decoration: const InputDecoration(
+                          prefixText: '+91 ', labelText: 'Mobile number'),
+                      validator: (value) => (value == null || value.length < 10)
+                          ? 'Enter a valid mobile number'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: auth.isLoading ? null : _continue,
+                      icon: auth.isLoading
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.sms_outlined),
+                      label: const Text('Send OTP'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _continue() async {
+    if (!_formKey.currentState!.validate()) return;
+    final phone = _normalizePhone(_phoneController.text);
+    try {
+      final authController = ref.read(authControllerProvider.notifier);
+      unawaited(authController.requestOtp(phone));
+      if (!mounted) return;
+      context.go('/otp?phone=${Uri.encodeComponent(phone)}');
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
+  String _normalizePhone(String value) {
+    final trimmed = value.trim().replaceAll(RegExp(r'\s+|-'), '');
+    if (trimmed.startsWith('+')) return trimmed;
+    final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+    if (digits.startsWith('91') && digits.length == 12) return '+$digits';
+    return '+91$digits';
+  }
+}

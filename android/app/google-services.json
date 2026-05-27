@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897348520214",
+    "project_id": "nestbuddy-d6c82",
+    "storage_bucket": "nestbuddy-d6c82.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897348520214:android:b1989cf46b9b01797ee837",
+        "android_client_info": {
+          "package_name": "com.application.nestbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5CbUvm3zKkAPud-oUks5inPhZ3uFIUX4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
