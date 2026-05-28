@@ -1,11 +1,11 @@
 {
-    "name": "nestbuddy_application",
-    "short_name": "nestbuddy_application",
+    "name": "NestBuddy",
+    "short_name": "NestBuddy",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0D5C63",
+    "theme_color": "#0D5C63",
+    "description": "Quick commerce for home, hardware, plywood, electrical, and plumbing essentials.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -41,7 +41,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(Icons.storefront, size: 48, color: scheme.primary),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Image.asset('assets/branding/nestbuddy_icon.png'),
+              ),
             ),
             const SizedBox(height: 18),
             Text(

@@ -94,6 +94,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     child: AsyncValueView(
                       value: products,
+                      onRetry: () => ref.invalidate(trimmed.isEmpty
+                          ? productsProvider(const ProductQuery(limit: 20))
+                          : productsProvider(
+                              ProductQuery(search: trimmed, limit: 30))),
                       data: (page) => _SearchResults(products: page.items),
                     ),
                   ),
@@ -132,7 +136,7 @@ class _SearchResults extends ConsumerWidget {
         crossAxisCount: columns,
         crossAxisSpacing: 14,
         mainAxisSpacing: 18,
-        childAspectRatio: 0.64,
+        childAspectRatio: width >= 720 ? 0.68 : 0.56,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {

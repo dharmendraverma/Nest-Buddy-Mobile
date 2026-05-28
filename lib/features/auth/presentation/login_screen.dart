@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/auth_controller.dart';
+import '../../../shared/widgets/no_internet_view.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -87,14 +86,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final phone = _normalizePhone(_phoneController.text);
     try {
       final authController = ref.read(authControllerProvider.notifier);
-      unawaited(authController.requestOtp(phone));
+      await authController.requestOtp(phone);
       if (!mounted) return;
-      context.go('/otp?phone=${Uri.encodeComponent(phone)}');
+      final session = ref.read(otpSessionProvider);
+      if (session.canVerify) {
+        context.go('/otp?phone=${Uri.encodeComponent(phone)}');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(session.message ?? 'Unable to send OTP.')),
+        );
+      }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
-        );
+        if (isNetworkIssue(error)) {
+          showNoInternetSnackBar(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        }
       }
     }
   }

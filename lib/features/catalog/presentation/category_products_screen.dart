@@ -41,6 +41,7 @@ class _CategoryProductsScreenState
           children: [
             AsyncValueView(
               value: category,
+              onRetry: () => ref.invalidate(_categoryProvider(widget.slug)),
               data: (category) {
                 final children = category.children;
                 final activeSlug = selectedSlug ?? category.slug;
@@ -114,6 +115,8 @@ class _CategoryProductsScreenState
                             Expanded(
                               child: AsyncValueView(
                                 value: products,
+                                onRetry: () => ref.invalidate(productsProvider(
+                                    ProductQuery(categorySlug: activeSlug))),
                                 data: (page) =>
                                     _ProductList(products: page.items),
                               ),
@@ -212,7 +215,7 @@ class _ProductList extends ConsumerWidget {
         crossAxisCount: columns,
         crossAxisSpacing: 18,
         mainAxisSpacing: 26,
-        childAspectRatio: 0.58,
+        childAspectRatio: width >= 720 ? 0.64 : 0.54,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {

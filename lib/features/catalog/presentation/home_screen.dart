@@ -27,6 +27,7 @@ class HomeScreen extends ConsumerWidget {
         children: [
           AsyncValueView(
             value: categories,
+            onRetry: () => ref.invalidate(categoriesProvider),
             data: (items) => RefreshIndicator(
               onRefresh: () async {
                 final refreshFuture = ref.refresh(categoriesProvider.future);
@@ -53,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
                                 children: [
                                   _ServicePill(
                                     serviceable: pincode.isServiceable,
+                                    pincode: pincode.pincode,
                                     onTap: () =>
                                         _showPincodeDialog(context, ref),
                                   ),
@@ -262,24 +264,59 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _ServicePill extends StatelessWidget {
-  const _ServicePill({required this.serviceable, required this.onTap});
+  const _ServicePill({
+    required this.serviceable,
+    required this.pincode,
+    required this.onTap,
+  });
 
   final bool serviceable;
+  final String pincode;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.icon(
-      onPressed: onTap,
-      style: FilledButton.styleFrom(
-        backgroundColor:
-            serviceable ? const Color(0xFF0D5C63) : const Color(0xFFE76F51),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-      ),
-      icon: const Icon(Icons.bolt, size: 18),
-      label: Text(serviceable ? 'Available' : 'Not Available',
-          style: const TextStyle(fontWeight: FontWeight.w900)),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FilledButton.icon(
+          onPressed: onTap,
+          style: FilledButton.styleFrom(
+            backgroundColor:
+                serviceable ? const Color(0xFF0D5C63) : const Color(0xFFE76F51),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999)),
+          ),
+          icon: const Icon(Icons.bolt, size: 18),
+          label: Text(
+            serviceable ? 'Available' : 'Not Available',
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+        ),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  pincode,
+                  style: const TextStyle(
+                    color: Color(0xFF11383D),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const Icon(Icons.keyboard_arrow_down,
+                    size: 16, color: Color(0xFF11383D)),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

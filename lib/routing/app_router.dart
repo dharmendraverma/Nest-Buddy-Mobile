@@ -32,7 +32,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (splashRoute) return null;
       if (auth.isLoading && !authRoute && !loadingRoute) return '/auth-loading';
       if (auth.isLoading) return null;
-      if (otpSession.isPending && !otpRoute) {
+      if (otpSession.isPending && otpSession.canVerify && !otpRoute) {
         return '/otp?phone=${Uri.encodeComponent(otpSession.phone ?? '')}';
       }
       if (!loggedIn && !authRoute && !loadingRoute) return '/login';

@@ -8,9 +8,11 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) {
 });
 
 final selectedCategoryProvider = StateProvider<CategoryModel?>((ref) => null);
-final selectedSubCategoryProvider = StateProvider<CategoryModel?>((ref) => null);
+final selectedSubCategoryProvider =
+    StateProvider<CategoryModel?>((ref) => null);
 
-final productsProvider = FutureProvider.family<ProductPage, ProductQuery>((ref, query) {
+final productsProvider =
+    FutureProvider.family<ProductPage, ProductQuery>((ref, query) {
   return ref.watch(catalogApiServiceProvider).getProducts(
         category: query.categorySlug,
         search: query.search,

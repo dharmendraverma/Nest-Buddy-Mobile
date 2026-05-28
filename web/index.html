@@ -18,21 +18,65 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Quick commerce for home essentials.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="nestbuddy_application">
+  <meta name="apple-mobile-web-app-title" content="NestBuddy">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>nestbuddy_application</title>
+  <title>NestBuddy</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #0D5C63;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #native-splash {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #0D5C63;
+      color: white;
+      z-index: 9999;
+    }
+
+    #native-splash img {
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    #native-splash strong {
+      display: block;
+      margin-top: 16px;
+      font-size: 28px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div id="native-splash">
+    <div>
+      <img src="icons/Icon-192.png" alt="NestBuddy">
+      <strong>NestBuddy</strong>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var splash = document.getElementById('native-splash');
+      if (splash) splash.remove();
+    });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

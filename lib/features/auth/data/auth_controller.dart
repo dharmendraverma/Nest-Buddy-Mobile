@@ -77,12 +77,13 @@ class AuthController extends AsyncNotifier<AppUser?> {
     return _auth.currentUser?.toAppUser();
   }
 
-  Future<void> requestOtp(String phone) async {
+  Future<void> requestOtp(String phone, {bool resend = false}) async {
     state = const AsyncLoading();
     ref.read(otpSessionProvider.notifier).start(phone);
     _verificationId = null;
     _webConfirmationResult = null;
     _autoRetrievedCredential = null;
+    if (!resend) _resendToken = null;
 
     if (_auth.currentUser != null) {
       await _auth.signOut();
@@ -185,6 +186,10 @@ class AuthController extends AsyncNotifier<AppUser?> {
     );
   }
 
+  Future<void> resendOtp(String phone) {
+    return requestOtp(phone, resend: true);
+  }
+
   Future<void> _applyDebugPhoneAuthSettings(String phone) {
     if (kReleaseMode) return Future<void>.value();
     const testPhone = String.fromEnvironment('FIREBASE_TEST_PHONE_NUMBER');
@@ -237,6 +242,15 @@ class AuthController extends AsyncNotifier<AppUser?> {
 
   Future<void> signOut() async {
     await _auth.signOut();
+    _verificationId = null;
+    _resendToken = null;
+    _webConfirmationResult = null;
+    _autoRetrievedCredential = null;
+    ref.read(otpSessionProvider.notifier).clear();
+    state = const AsyncData(null);
+  }
+
+  void cancelOtp() {
     _verificationId = null;
     _resendToken = null;
     _webConfirmationResult = null;
@@ -303,6 +317,8 @@ String _messageForFirebaseError(FirebaseAuthException error) {
     'too-many-requests' =>
       'Too many OTP attempts. Wait a while or use a Firebase test phone number.',
     'quota-exceeded' => 'Firebase SMS quota is exhausted for this project.',
+    'network-request-failed' =>
+      'No internet connection. Please reconnect and try again.',
     'operation-not-allowed' =>
       'Phone sign-in is not enabled in Firebase Authentication.',
     'app-not-authorized' =>

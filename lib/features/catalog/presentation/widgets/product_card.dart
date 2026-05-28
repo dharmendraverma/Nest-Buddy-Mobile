@@ -32,23 +32,22 @@ class ProductCard extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AspectRatio(
-                aspectRatio: 1.05,
+              Expanded(
                 child: _ProductImage(imageUrl: product.imageUrl),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
                 product.name,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                    fontSize: 16, height: 1.08, fontWeight: FontWeight.w900),
+                    fontSize: 15, height: 1.08, fontWeight: FontWeight.w900),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               _AddBadge(
                 optionText: optionText,
                 onPressed: onAdd,
@@ -103,18 +102,25 @@ class _AddBadge extends StatelessWidget {
     const green = Color(0xFF277B63);
     return SizedBox(
       width: double.infinity,
-      height: 44,
+      height: 38,
       child: FilledButton.icon(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: green,
           foregroundColor: Colors.white,
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 7),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        icon: const Icon(Icons.keyboard_arrow_down, size: 22),
-        label: Text(optionText ?? 'Add',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+        icon: const Icon(Icons.keyboard_arrow_down, size: 19),
+        label: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            optionText ?? 'Add',
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+          ),
+        ),
       ),
     );
   }
