@@ -36,15 +36,20 @@ class AddressController extends Notifier<List<AddressModel>> {
     }
   }
 
-  Future<void> upsert(AddressModel address) async {
+  Future<AddressModel> upsert(AddressModel address) async {
     state = _ensureDefault(_upsertLocal(state, address));
     try {
-      final saved = address.id.startsWith('local-') || address.id.isEmpty
+      final isLocal = address.id.startsWith('local-') || address.id.isEmpty;
+      final saved = isLocal
           ? await ref.read(addressApiServiceProvider).addAddress(address)
           : await ref.read(addressApiServiceProvider).updateAddress(address);
-      state = _ensureDefault(_upsertLocal(state, saved));
+      state = _ensureDefault(isLocal
+          ? _replaceLocal(state, address.id, saved)
+          : _upsertLocal(state, saved));
+      return saved;
     } catch (_) {
       // The optimistic address remains available for checkout.
+      return address;
     }
   }
 
@@ -77,6 +82,14 @@ class AddressController extends Notifier<List<AddressModel>> {
     return [
       for (final item in addresses)
         if (item.id == address.id) address else item,
+    ];
+  }
+
+  List<AddressModel> _replaceLocal(
+      List<AddressModel> addresses, String localId, AddressModel saved) {
+    return [
+      for (final item in addresses)
+        if (item.id == localId || item.id == saved.id) saved else item,
     ];
   }
 

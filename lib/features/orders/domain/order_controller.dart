@@ -24,14 +24,29 @@ class OrderController extends Notifier<List<OrderModel>> {
   Future<void> refresh() async {
     if (ref.read(authControllerProvider).valueOrNull == null) return;
     try {
-      state = await ref.read(orderApiServiceProvider).getUserOrders();
+      await fetchOrders();
     } catch (_) {
       // Keep any locally placed orders visible if the list endpoint fails.
     }
   }
 
-  Future<OrderModel> getOrder(String id) {
-    return ref.read(orderApiServiceProvider).getOrder(id);
+  Future<List<OrderModel>> fetchOrders() async {
+    if (ref.read(authControllerProvider).valueOrNull == null) return const [];
+    final orders = await ref.read(orderApiServiceProvider).getUserOrders();
+    state = orders;
+    return orders;
+  }
+
+  Future<OrderModel> getOrder(String id) async {
+    try {
+      return await ref.read(orderApiServiceProvider).getOrder(id);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        final local = state.where((order) => order.id == id);
+        if (local.isNotEmpty) return local.first;
+      }
+      rethrow;
+    }
   }
 
   Future<OrderModel> placeOrder(
@@ -75,6 +90,7 @@ class OrderController extends Notifier<List<OrderModel>> {
     } on DioException {
       return OrderModel(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
+        orderNumber: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: userId,
         items: lines,
         total: fallbackTotal,

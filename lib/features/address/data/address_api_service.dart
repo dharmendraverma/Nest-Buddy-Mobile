@@ -79,12 +79,21 @@ class AddressApiService {
   }
 
   List<Map<String, dynamic>> _unwrapList(Object? value) {
-    if (value is List) return value.whereType<Map<String, dynamic>>().toList();
-    if (value is Map<String, dynamic>) {
+    if (value is List) {
+      return [
+        for (final item in value)
+          if (item is Map) Map<String, dynamic>.from(item),
+      ];
+    }
+    if (value is Map) {
+      final map = Map<String, dynamic>.from(value);
       for (final key in ['items', 'data', 'addresses']) {
-        final candidate = value[key];
+        final candidate = map[key];
         if (candidate is List) {
-          return candidate.whereType<Map<String, dynamic>>().toList();
+          return [
+            for (final item in candidate)
+              if (item is Map) Map<String, dynamic>.from(item),
+          ];
         }
       }
     }
@@ -92,10 +101,11 @@ class AddressApiService {
   }
 
   Map<String, dynamic> _unwrapMap(Object? value) {
-    if (value is Map<String, dynamic>) {
-      final data = value['data'];
-      if (data is Map<String, dynamic>) return data;
-      return value;
+    if (value is Map) {
+      final map = Map<String, dynamic>.from(value);
+      final data = map['data'];
+      if (data is Map) return Map<String, dynamic>.from(data);
+      return map;
     }
     return const {};
   }

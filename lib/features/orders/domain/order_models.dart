@@ -9,6 +9,7 @@ part 'order_models.g.dart';
 class OrderModel with _$OrderModel {
   const factory OrderModel({
     required String id,
+    String? orderNumber,
     required String userId,
     @Default('PLACED') String status,
     @Default(<CartLine>[]) List<CartLine> items,

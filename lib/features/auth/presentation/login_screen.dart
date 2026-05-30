@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,17 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _sendingOtp = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(authControllerProvider.notifier).cancelOtp();
+      setState(() => _sendingOtp = false);
+    });
+  }
 
   @override
   void dispose() {
@@ -25,7 +38,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authControllerProvider);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -39,11 +51,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('NestBuddy',
-                        style: Theme.of(context)
-                            .textTheme
-                            .displaySmall
-                            ?.copyWith(fontWeight: FontWeight.w800)),
+                    Center(
+                      child: Image.asset(
+                        'assets/branding/nestbuddy_logo.png',
+                        height: 86,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Text(
                         'Quick delivery for hardware, plywood, electrical, and plumbing essentials.',
@@ -63,8 +77,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     FilledButton.icon(
-                      onPressed: auth.isLoading ? null : _continue,
-                      icon: auth.isLoading
+                      onPressed: _sendingOtp ? null : _continue,
+                      icon: _sendingOtp
                           ? const SizedBox.square(
                               dimension: 18,
                               child: CircularProgressIndicator(strokeWidth: 2))
@@ -84,19 +98,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _continue() async {
     if (!_formKey.currentState!.validate()) return;
     final phone = _normalizePhone(_phoneController.text);
+    setState(() => _sendingOtp = true);
     try {
       final authController = ref.read(authControllerProvider.notifier);
-      await authController.requestOtp(phone);
+      authController.cancelOtp();
+      await authController
+          .requestOtp(phone)
+          .timeout(const Duration(seconds: 22));
       if (!mounted) return;
       final session = ref.read(otpSessionProvider);
       if (session.canVerify) {
+        setState(() => _sendingOtp = false);
         context.go('/otp?phone=${Uri.encodeComponent(phone)}');
+        return;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(session.message ?? 'Unable to send OTP.')),
         );
       }
+    } on TimeoutException {
+      ref.read(authControllerProvider.notifier).cancelOtp();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP request timed out. Please try again.'),
+          ),
+        );
+      }
     } catch (error) {
+      ref.read(authControllerProvider.notifier).cancelOtp();
       if (mounted) {
         if (isNetworkIssue(error)) {
           showNoInternetSnackBar(context);
@@ -106,6 +136,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
         }
       }
+    } finally {
+      if (mounted) setState(() => _sendingOtp = false);
     }
   }
 

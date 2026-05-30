@@ -16,71 +16,64 @@ class FloatingCartButton extends ConsumerWidget {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 18),
-          child: InkWell(
-            onTap: () => context.go('/cart'),
+          padding: const EdgeInsets.only(bottom: 22),
+          child: Material(
+            color: const Color(0xFF11383D),
             borderRadius: BorderRadius.circular(999),
-            child: Container(
-              constraints: const BoxConstraints(minWidth: 228, maxWidth: 300),
-              child: Ink(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF0D5C63), Color(0xFF2A9D8F)],
-                  ),
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF0D5C63).withValues(alpha: 0.28),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.16),
-                        borderRadius: BorderRadius.circular(14),
+            elevation: 12,
+            shadowColor: const Color(0xFF11383D).withValues(alpha: 0.32),
+            child: InkWell(
+              onTap: () => context.go('/cart'),
+              borderRadius: BorderRadius.circular(999),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 218, maxWidth: 292),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(Icons.shopping_bag_outlined,
+                            color: Colors.white),
                       ),
-                      child: const Icon(Icons.shopping_bag_outlined,
-                          color: Colors.white),
-                    ),
-                    const SizedBox(width: 12),
-                    const Flexible(
-                      child: Text(
-                        'View Cart',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                      const SizedBox(width: 12),
+                      const Flexible(
                         child: Text(
-                          '${cart.totalItems}',
-                          style: const TextStyle(
-                            color: Color(0xFF0D5C63),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
+                          'View Cart',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: Text(
+                            '${cart.totalItems}',
+                            style: const TextStyle(
+                              color: Color(0xFF0D5C63),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

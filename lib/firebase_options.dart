@@ -72,5 +72,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'nestbuddy-d6c82.firebasestorage.app',
     iosBundleId: 'com.application.nestbuddy',
   );
-
 }

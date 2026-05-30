@@ -21,6 +21,7 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$OrderModel {
   String get id => throw _privateConstructorUsedError;
+  String? get orderNumber => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   List<CartLine> get items => throw _privateConstructorUsedError;
@@ -45,6 +46,7 @@ abstract class $OrderModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String? orderNumber,
       String userId,
       String status,
       List<CartLine> items,
@@ -68,6 +70,7 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
   @override
   $Res call({
     Object? id = null,
+    Object? orderNumber = freezed,
     Object? userId = null,
     Object? status = null,
     Object? items = null,
@@ -79,6 +82,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      orderNumber: freezed == orderNumber
+          ? _value.orderNumber
+          : orderNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -113,6 +120,7 @@ abstract class _$$OrderModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
+      String? orderNumber,
       String userId,
       String status,
       List<CartLine> items,
@@ -134,6 +142,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? orderNumber = freezed,
     Object? userId = null,
     Object? status = null,
     Object? items = null,
@@ -145,6 +154,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      orderNumber: freezed == orderNumber
+          ? _value.orderNumber
+          : orderNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -174,6 +187,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
 class _$OrderModelImpl implements _OrderModel {
   const _$OrderModelImpl(
       {required this.id,
+      this.orderNumber,
       required this.userId,
       this.status = 'PLACED',
       final List<CartLine> items = const <CartLine>[],
@@ -186,6 +200,8 @@ class _$OrderModelImpl implements _OrderModel {
 
   @override
   final String id;
+  @override
+  final String? orderNumber;
   @override
   final String userId;
   @override
@@ -208,7 +224,7 @@ class _$OrderModelImpl implements _OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, userId: $userId, status: $status, items: $items, total: $total, createdAt: $createdAt)';
+    return 'OrderModel(id: $id, orderNumber: $orderNumber, userId: $userId, status: $status, items: $items, total: $total, createdAt: $createdAt)';
   }
 
   @override
@@ -217,6 +233,8 @@ class _$OrderModelImpl implements _OrderModel {
         (other.runtimeType == runtimeType &&
             other is _$OrderModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.orderNumber, orderNumber) ||
+                other.orderNumber == orderNumber) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
@@ -227,7 +245,7 @@ class _$OrderModelImpl implements _OrderModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, status,
+  int get hashCode => Object.hash(runtimeType, id, orderNumber, userId, status,
       const DeepCollectionEquality().hash(_items), total, createdAt);
 
   /// Create a copy of OrderModel
@@ -249,6 +267,7 @@ class _$OrderModelImpl implements _OrderModel {
 abstract class _OrderModel implements OrderModel {
   const factory _OrderModel(
       {required final String id,
+      final String? orderNumber,
       required final String userId,
       final String status,
       final List<CartLine> items,
@@ -260,6 +279,8 @@ abstract class _OrderModel implements OrderModel {
 
   @override
   String get id;
+  @override
+  String? get orderNumber;
   @override
   String get userId;
   @override

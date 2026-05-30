@@ -35,24 +35,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 86,
-              height: 86,
+              width: 246,
+              height: 82,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(18),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset('assets/branding/nestbuddy_icon.png'),
+                padding: const EdgeInsets.all(12),
+                child: Image.asset('assets/branding/nestbuddy_logo.png'),
               ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              'NestBuddy',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
             ),
             const SizedBox(height: 8),
             Text(

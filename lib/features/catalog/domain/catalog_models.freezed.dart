@@ -309,6 +309,8 @@ mixin _$ProductModel {
   String get slug => throw _privateConstructorUsedError;
   @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
   num get price => throw _privateConstructorUsedError;
+  @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson)
+  num get mrp => throw _privateConstructorUsedError;
   String? get shortDescription => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get unit => throw _privateConstructorUsedError;
@@ -340,6 +342,7 @@ abstract class $ProductModelCopyWith<$Res> {
       String name,
       String slug,
       @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson) num price,
+      @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson) num mrp,
       String? shortDescription,
       String? description,
       String? unit,
@@ -369,6 +372,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? name = null,
     Object? slug = null,
     Object? price = null,
+    Object? mrp = null,
     Object? shortDescription = freezed,
     Object? description = freezed,
     Object? unit = freezed,
@@ -394,6 +398,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as num,
+      mrp: null == mrp
+          ? _value.mrp
+          : mrp // ignore: cast_nullable_to_non_nullable
               as num,
       shortDescription: freezed == shortDescription
           ? _value.shortDescription
@@ -444,6 +452,7 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       String name,
       String slug,
       @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson) num price,
+      @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson) num mrp,
       String? shortDescription,
       String? description,
       String? unit,
@@ -471,6 +480,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? slug = null,
     Object? price = null,
+    Object? mrp = null,
     Object? shortDescription = freezed,
     Object? description = freezed,
     Object? unit = freezed,
@@ -496,6 +506,10 @@ class __$$ProductModelImplCopyWithImpl<$Res>
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as num,
+      mrp: null == mrp
+          ? _value.mrp
+          : mrp // ignore: cast_nullable_to_non_nullable
               as num,
       shortDescription: freezed == shortDescription
           ? _value.shortDescription
@@ -542,6 +556,7 @@ class _$ProductModelImpl implements _ProductModel {
       required this.slug,
       @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
       required this.price,
+      @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson) this.mrp = 0,
       this.shortDescription,
       this.description,
       this.unit,
@@ -565,6 +580,9 @@ class _$ProductModelImpl implements _ProductModel {
   @override
   @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
   final num price;
+  @override
+  @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson)
+  final num mrp;
   @override
   final String? shortDescription;
   @override
@@ -598,7 +616,7 @@ class _$ProductModelImpl implements _ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(id: $id, name: $name, slug: $slug, price: $price, shortDescription: $shortDescription, description: $description, unit: $unit, imageUrl: $imageUrl, brandName: $brandName, categoryId: $categoryId, attributes: $attributes, variants: $variants)';
+    return 'ProductModel(id: $id, name: $name, slug: $slug, price: $price, mrp: $mrp, shortDescription: $shortDescription, description: $description, unit: $unit, imageUrl: $imageUrl, brandName: $brandName, categoryId: $categoryId, attributes: $attributes, variants: $variants)';
   }
 
   @override
@@ -610,6 +628,7 @@ class _$ProductModelImpl implements _ProductModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.slug, slug) || other.slug == slug) &&
             (identical(other.price, price) || other.price == price) &&
+            (identical(other.mrp, mrp) || other.mrp == mrp) &&
             (identical(other.shortDescription, shortDescription) ||
                 other.shortDescription == shortDescription) &&
             (identical(other.description, description) ||
@@ -634,6 +653,7 @@ class _$ProductModelImpl implements _ProductModel {
       name,
       slug,
       price,
+      mrp,
       shortDescription,
       description,
       unit,
@@ -666,6 +686,8 @@ abstract class _ProductModel implements ProductModel {
       required final String slug,
       @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
       required final num price,
+      @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson)
+      final num mrp,
       final String? shortDescription,
       final String? description,
       final String? unit,
@@ -687,6 +709,9 @@ abstract class _ProductModel implements ProductModel {
   @override
   @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
   num get price;
+  @override
+  @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson)
+  num get mrp;
   @override
   String? get shortDescription;
   @override
@@ -910,6 +935,8 @@ mixin _$ProductVariant {
   String get name => throw _privateConstructorUsedError;
   @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
   num get price => throw _privateConstructorUsedError;
+  @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson)
+  num get mrp => throw _privateConstructorUsedError;
   @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
   num get quantity => throw _privateConstructorUsedError;
   String? get color => throw _privateConstructorUsedError;
@@ -937,6 +964,7 @@ abstract class $ProductVariantCopyWith<$Res> {
       String sku,
       String name,
       @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson) num price,
+      @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson) num mrp,
       @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
       num quantity,
       String? color,
@@ -963,6 +991,7 @@ class _$ProductVariantCopyWithImpl<$Res, $Val extends ProductVariant>
     Object? sku = null,
     Object? name = null,
     Object? price = null,
+    Object? mrp = null,
     Object? quantity = null,
     Object? color = freezed,
     Object? size = freezed,
@@ -984,6 +1013,10 @@ class _$ProductVariantCopyWithImpl<$Res, $Val extends ProductVariant>
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as num,
+      mrp: null == mrp
+          ? _value.mrp
+          : mrp // ignore: cast_nullable_to_non_nullable
               as num,
       quantity: null == quantity
           ? _value.quantity
@@ -1018,6 +1051,7 @@ abstract class _$$ProductVariantImplCopyWith<$Res>
       String sku,
       String name,
       @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson) num price,
+      @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson) num mrp,
       @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
       num quantity,
       String? color,
@@ -1042,6 +1076,7 @@ class __$$ProductVariantImplCopyWithImpl<$Res>
     Object? sku = null,
     Object? name = null,
     Object? price = null,
+    Object? mrp = null,
     Object? quantity = null,
     Object? color = freezed,
     Object? size = freezed,
@@ -1063,6 +1098,10 @@ class __$$ProductVariantImplCopyWithImpl<$Res>
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
+              as num,
+      mrp: null == mrp
+          ? _value.mrp
+          : mrp // ignore: cast_nullable_to_non_nullable
               as num,
       quantity: null == quantity
           ? _value.quantity
@@ -1093,6 +1132,7 @@ class _$ProductVariantImpl implements _ProductVariant {
       required this.name,
       @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
       required this.price,
+      @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson) this.mrp = 0,
       @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
       this.quantity = 0,
       this.color,
@@ -1112,6 +1152,9 @@ class _$ProductVariantImpl implements _ProductVariant {
   @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
   final num price;
   @override
+  @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson)
+  final num mrp;
+  @override
   @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
   final num quantity;
   @override
@@ -1123,7 +1166,7 @@ class _$ProductVariantImpl implements _ProductVariant {
 
   @override
   String toString() {
-    return 'ProductVariant(id: $id, sku: $sku, name: $name, price: $price, quantity: $quantity, color: $color, size: $size, theme: $theme)';
+    return 'ProductVariant(id: $id, sku: $sku, name: $name, price: $price, mrp: $mrp, quantity: $quantity, color: $color, size: $size, theme: $theme)';
   }
 
   @override
@@ -1135,6 +1178,7 @@ class _$ProductVariantImpl implements _ProductVariant {
             (identical(other.sku, sku) || other.sku == sku) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.price, price) || other.price == price) &&
+            (identical(other.mrp, mrp) || other.mrp == mrp) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
             (identical(other.color, color) || other.color == color) &&
@@ -1145,7 +1189,7 @@ class _$ProductVariantImpl implements _ProductVariant {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, sku, name, price, quantity, color, size, theme);
+      runtimeType, id, sku, name, price, mrp, quantity, color, size, theme);
 
   /// Create a copy of ProductVariant
   /// with the given fields replaced by the non-null parameter values.
@@ -1171,6 +1215,8 @@ abstract class _ProductVariant implements ProductVariant {
       required final String name,
       @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
       required final num price,
+      @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson)
+      final num mrp,
       @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
       final num quantity,
       final String? color,
@@ -1189,6 +1235,9 @@ abstract class _ProductVariant implements ProductVariant {
   @override
   @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
   num get price;
+  @override
+  @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson)
+  num get mrp;
   @override
   @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
   num get quantity;

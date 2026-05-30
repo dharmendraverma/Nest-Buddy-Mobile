@@ -92,10 +92,18 @@ class AuthController extends AsyncNotifier<AppUser?> {
     if (kIsWeb) {
       try {
         await _applyDebugPhoneAuthSettings(phone);
-        _webConfirmationResult = await _auth.signInWithPhoneNumber(phone);
+        _webConfirmationResult = await _auth
+            .signInWithPhoneNumber(phone)
+            .timeout(const Duration(seconds: 18));
         ref.read(otpSessionProvider.notifier).ready();
         state = const AsyncData(null);
         return;
+      } on TimeoutException catch (error) {
+        const message =
+            'OTP request did not complete. Please try again in a few seconds.';
+        ref.read(otpSessionProvider.notifier).failed(message);
+        state = const AsyncData(null);
+        throw AuthException(message, error);
       } on FirebaseAuthException catch (error, stackTrace) {
         ref
             .read(otpSessionProvider.notifier)
@@ -123,38 +131,49 @@ class AuthController extends AsyncNotifier<AppUser?> {
     });
     try {
       await _applyDebugPhoneAuthSettings(phone);
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phone,
-        timeout: const Duration(seconds: 60),
-        forceResendingToken: _resendToken,
-        verificationCompleted: (credential) {
-          sendTimeout.cancel();
-          _autoRetrievedCredential = credential;
-          ref.read(otpSessionProvider.notifier).ready();
-          state = const AsyncData(null);
-          if (!completer.isCompleted) completer.complete();
-        },
-        verificationFailed: (error) {
-          sendTimeout.cancel();
-          final message = _messageForFirebaseError(error);
-          ref.read(otpSessionProvider.notifier).failed(message);
-          state = AsyncError(error, StackTrace.current);
-          if (!completer.isCompleted) {
-            completer.completeError(AuthException(message, error));
-          }
-        },
-        codeSent: (verificationId, resendToken) {
-          sendTimeout.cancel();
-          _verificationId = verificationId;
-          _resendToken = resendToken;
-          ref.read(otpSessionProvider.notifier).ready();
-          state = const AsyncData(null);
-          if (!completer.isCompleted) completer.complete();
-        },
-        codeAutoRetrievalTimeout: (verificationId) {
-          _verificationId = verificationId;
-        },
-      );
+      await _auth
+          .verifyPhoneNumber(
+            phoneNumber: phone,
+            timeout: const Duration(seconds: 60),
+            forceResendingToken: _resendToken,
+            verificationCompleted: (credential) {
+              sendTimeout.cancel();
+              _autoRetrievedCredential = credential;
+              ref.read(otpSessionProvider.notifier).ready();
+              state = const AsyncData(null);
+              if (!completer.isCompleted) completer.complete();
+            },
+            verificationFailed: (error) {
+              sendTimeout.cancel();
+              final message = _messageForFirebaseError(error);
+              ref.read(otpSessionProvider.notifier).failed(message);
+              state = AsyncError(error, StackTrace.current);
+              if (!completer.isCompleted) {
+                completer.completeError(AuthException(message, error));
+              }
+            },
+            codeSent: (verificationId, resendToken) {
+              sendTimeout.cancel();
+              _verificationId = verificationId;
+              _resendToken = resendToken;
+              ref.read(otpSessionProvider.notifier).ready();
+              state = const AsyncData(null);
+              if (!completer.isCompleted) completer.complete();
+            },
+            codeAutoRetrievalTimeout: (verificationId) {
+              _verificationId = verificationId;
+            },
+          )
+          .timeout(const Duration(seconds: 18));
+    } on TimeoutException catch (error) {
+      sendTimeout.cancel();
+      const message =
+          'OTP request did not complete. Please try again in a few seconds.';
+      ref.read(otpSessionProvider.notifier).failed(message);
+      state = const AsyncData(null);
+      if (!completer.isCompleted) {
+        completer.completeError(AuthException(message, error));
+      }
     } on FirebaseAuthException catch (error) {
       sendTimeout.cancel();
       final message = _messageForFirebaseError(error);
@@ -250,6 +269,36 @@ class AuthController extends AsyncNotifier<AppUser?> {
     state = const AsyncData(null);
   }
 
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      state = const AsyncData(null);
+      return;
+    }
+    state = const AsyncLoading();
+    try {
+      await user.delete();
+      _verificationId = null;
+      _resendToken = null;
+      _webConfirmationResult = null;
+      _autoRetrievedCredential = null;
+      ref.read(otpSessionProvider.notifier).clear();
+      state = const AsyncData(null);
+    } on FirebaseAuthException catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      if (error.code == 'requires-recent-login') {
+        throw AuthException(
+          'Please sign out and login again before deleting this account.',
+          error,
+        );
+      }
+      throw AuthException(_messageForFirebaseError(error), error);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      throw AuthException('Unable to delete account. Please try again.', error);
+    }
+  }
+
   void cancelOtp() {
     _verificationId = null;
     _resendToken = null;
@@ -267,17 +316,26 @@ class AuthController extends AsyncNotifier<AppUser?> {
     if (user == null) {
       throw AuthException('Please login before editing profile.');
     }
-    state = const AsyncLoading();
+    final previous = state.valueOrNull ?? user.toAppUser();
+    final optimistic = previous.copyWith(name: name);
+    state = AsyncData(optimistic);
     try {
-      await ref
-          .read(profileApiServiceProvider)
-          .updateProfile(name: name, imageUrl: imageUrl);
-      await user.updateDisplayName(name);
-      if (imageUrl != null) await user.updatePhotoURL(imageUrl);
-      await user.reload();
-      state = AsyncData(_auth.currentUser?.toAppUser());
-    } catch (error, stackTrace) {
-      state = AsyncError(error, stackTrace);
+      await user.updateDisplayName(name).timeout(const Duration(seconds: 8));
+      try {
+        await ref
+            .read(profileApiServiceProvider)
+            .updateProfile(name: name)
+            .timeout(const Duration(seconds: 8));
+      } catch (_) {
+        // Firebase is the source of truth for the local profile. The backend
+        // sync can recover on the next successful profile update.
+      }
+      try {
+        await user.reload().timeout(const Duration(seconds: 8));
+      } catch (_) {}
+      state = AsyncData(_auth.currentUser?.toAppUser() ?? optimistic);
+    } catch (error) {
+      state = AsyncData(optimistic);
       throw AuthException('Unable to update profile. Please try again.', error);
     }
   }

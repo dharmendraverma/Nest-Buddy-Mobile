@@ -110,18 +110,25 @@ class CatalogApiService {
 
   List<Map<String, dynamic>> _unwrapList(dynamic value) {
     if (value is List) {
-      return value.whereType<Map<String, dynamic>>().toList();
+      return [
+        for (final item in value)
+          if (item is Map) Map<String, dynamic>.from(item),
+      ];
     }
-    if (value is Map<String, dynamic>) {
+    if (value is Map) {
+      final map = Map<String, dynamic>.from(value);
       final candidates = [
-        value['items'],
-        value['data'],
-        value['products'],
-        value['categories']
+        map['items'],
+        map['data'],
+        map['products'],
+        map['categories']
       ];
       for (final candidate in candidates) {
         if (candidate is List) {
-          return candidate.whereType<Map<String, dynamic>>().toList();
+          return [
+            for (final item in candidate)
+              if (item is Map) Map<String, dynamic>.from(item),
+          ];
         }
       }
     }
@@ -129,10 +136,11 @@ class CatalogApiService {
   }
 
   Map<String, dynamic> _unwrapMap(dynamic value) {
-    if (value is Map<String, dynamic>) {
-      final data = value['data'];
-      if (data is Map<String, dynamic>) return data;
-      return value;
+    if (value is Map) {
+      final map = Map<String, dynamic>.from(value);
+      final data = map['data'];
+      if (data is Map) return Map<String, dynamic>.from(data);
+      return map;
     }
     return const {};
   }

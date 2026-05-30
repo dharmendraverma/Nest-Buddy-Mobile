@@ -12,16 +12,10 @@ class ProfileApiService {
 
   final Dio _dio;
 
-  Future<Map<String, dynamic>> updateProfile({
-    required String name,
-    String? imageUrl,
-  }) async {
+  Future<Map<String, dynamic>> updateProfile({required String name}) async {
     final response = await _dio.patch(
       '/user',
-      data: {
-        'name': name,
-        if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
-      },
+      data: {'name': name},
     );
     final data = response.data;
     if (data is Map<String, dynamic>) {

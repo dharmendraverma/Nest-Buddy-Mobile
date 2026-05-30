@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/debug/alice_debug.dart';
 import '../features/auth/data/auth_controller.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
@@ -13,11 +15,14 @@ import '../features/catalog/presentation/search_screen.dart';
 import '../features/orders/presentation/orders_screen.dart';
 import '../features/orders/presentation/order_detail_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
+import '../features/profile/presentation/info_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import 'app_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey:
+        kDebugMode ? ref.watch(aliceProvider).getNavigatorKey() : null,
     initialLocation: '/splash',
     refreshListenable: _RouterRefresh(ref),
     redirect: (context, state) {
@@ -78,6 +83,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
               path: '/profile',
               builder: (context, state) => const ProfileScreen()),
+          GoRoute(
+              path: '/about',
+              builder: (context, state) =>
+                  const InfoScreen(kind: InfoPageKind.about)),
+          GoRoute(
+              path: '/contact',
+              builder: (context, state) =>
+                  const InfoScreen(kind: InfoPageKind.contact)),
           GoRoute(
               path: '/address',
               builder: (context, state) => const AddressScreen()),

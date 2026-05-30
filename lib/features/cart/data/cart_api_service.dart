@@ -43,6 +43,11 @@ class CartApiService {
           'name': json['productName'] ?? 'Product',
           'slug': json['productSlug'] ?? json['productId'] ?? 'product',
           'basePrice': json['price'] ?? json['salePrice'] ?? 0,
+          'salePrice': json['salePrice'],
+          'imageUrl': json['imageUrl'] ??
+              json['productImage'] ??
+              json['productImageUrl'],
+          'images': json['images'] ?? json['productImages'],
         };
     final product = ProductModel.fromJson(productJson);
     if (product.id.isEmpty) return null;
@@ -73,7 +78,12 @@ class CartApiService {
   }
 
   List<Map<String, dynamic>> _unwrapItems(Object? value) {
-    if (value is List) return value.whereType<Map<String, dynamic>>().toList();
+    if (value is List) {
+      return [
+        for (final item in value)
+          if (item is Map) Map<String, dynamic>.from(item),
+      ];
+    }
     if (value is Map<String, dynamic>) {
       for (final key in ['items', 'lines', 'cartItems', 'data']) {
         final candidate = value[key];
@@ -90,7 +100,7 @@ class CartApiService {
   }
 
   Map<String, dynamic>? _map(Object? value) {
-    return value is Map<String, dynamic> ? value : null;
+    return value is Map ? Map<String, dynamic>.from(value) : null;
   }
 
   int _int(Object? value) {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/api_constants.dart';
+import '../debug/alice_debug.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
@@ -35,6 +36,11 @@ final dioProvider = Provider<Dio>((ref) {
       },
     ),
   );
+
+  final aliceDioAdapter = ref.watch(aliceDioAdapterProvider);
+  if (aliceDioAdapter != null) {
+    dio.interceptors.add(aliceDioAdapter);
+  }
 
   dio.interceptors.add(
     LogInterceptor(

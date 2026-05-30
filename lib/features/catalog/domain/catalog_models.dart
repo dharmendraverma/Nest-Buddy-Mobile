@@ -29,6 +29,9 @@ class ProductModel with _$ProductModel {
     required String slug,
     @JsonKey(readValue: _readProductPrice, fromJson: _numFromJson)
     required num price,
+    @JsonKey(readValue: _readProductMrp, fromJson: _numFromJson)
+    @Default(0)
+    num mrp,
     String? shortDescription,
     String? description,
     String? unit,
@@ -63,6 +66,9 @@ class ProductVariant with _$ProductVariant {
     required String name,
     @JsonKey(readValue: _readVariantPrice, fromJson: _numFromJson)
     required num price,
+    @JsonKey(readValue: _readVariantMrp, fromJson: _numFromJson)
+    @Default(0)
+    num mrp,
     @JsonKey(readValue: _readVariantQuantity, fromJson: _numFromJson)
     @Default(0)
     num quantity,
@@ -89,8 +95,16 @@ Object? _readProductPrice(Map<dynamic, dynamic> json, String key) {
   return json['salePrice'] ?? json['basePrice'] ?? json[key];
 }
 
+Object? _readProductMrp(Map<dynamic, dynamic> json, String key) {
+  return json['basePrice'] ?? json['price'] ?? json[key] ?? json['salePrice'];
+}
+
 Object? _readVariantPrice(Map<dynamic, dynamic> json, String key) {
   return json['salePrice'] ?? json['price'] ?? json[key];
+}
+
+Object? _readVariantMrp(Map<dynamic, dynamic> json, String key) {
+  return json['price'] ?? json['basePrice'] ?? json[key] ?? json['salePrice'];
 }
 
 Object? _readVariantQuantity(Map<dynamic, dynamic> json, String key) {
@@ -113,6 +127,7 @@ num _numFromJson(Object? value) {
 
 Map<String, dynamic> _normalizeProductJson(Map<String, dynamic> json) {
   final normalized = Map<String, dynamic>.from(json);
+  final productMrp = _readProductMrp(normalized, 'mrp');
   normalized['id'] = _stringFromJson(normalized['id']);
   normalized['name'] = _stringFromJson(normalized['name']);
   normalized['slug'] = _stringFromJson(normalized['slug']);
@@ -120,9 +135,14 @@ Map<String, dynamic> _normalizeProductJson(Map<String, dynamic> json) {
   normalized['brandName'] =
       _nullableStringFromJson(_readBrandName(normalized, 'brandName'));
   normalized['imageUrl'] = _nullableStringFromJson(
-      normalized['imageUrl'] ?? _readFirstImageUrl(normalized['images']));
+    normalized['imageUrl'] ??
+        normalized['thumbnail'] ??
+        normalized['thumbnailUrl'] ??
+        _readFirstImageUrl(normalized['images']),
+  );
   normalized['basePrice'] =
       _numFromJson(normalized['salePrice'] ?? normalized['basePrice']);
+  normalized['mrp'] = _numFromJson(productMrp);
   normalized['variants'] = [
     for (final variant in _listFromJson(normalized['variants']))
       _normalizeVariantJson(variant),
@@ -138,8 +158,13 @@ Map<String, dynamic> _normalizeCategoryJson(Map<String, dynamic> json) {
   normalized['slug'] = _stringFromJson(normalized['slug']);
   normalized['description'] =
       _nullableStringFromJson(normalized['description']);
-  normalized['imageUrl'] =
-      _nullableStringFromJson(normalized['imageUrl'] ?? normalized['image']);
+  normalized['imageUrl'] = _nullableStringFromJson(
+    normalized['imageUrl'] ??
+        normalized['image'] ??
+        normalized['thumbnail'] ??
+        normalized['thumbnailUrl'] ??
+        _readFirstImageUrl(normalized['images']),
+  );
   normalized['parentId'] = _nullableStringFromJson(normalized['parentId']);
   normalized['children'] = [
     for (final child in _listFromJson(normalized['children']))
@@ -155,6 +180,7 @@ Map<String, dynamic> _normalizeVariantJson(Map<String, dynamic> json) {
   normalized['name'] = _stringFromJson(normalized['name']);
   normalized['price'] =
       _numFromJson(normalized['salePrice'] ?? normalized['price']);
+  normalized['mrp'] = _numFromJson(_readVariantMrp(normalized, 'mrp'));
   normalized['quantity'] =
       _numFromJson(_readVariantQuantity(normalized, 'quantity'));
   return normalized;
@@ -162,7 +188,10 @@ Map<String, dynamic> _normalizeVariantJson(Map<String, dynamic> json) {
 
 List<Map<String, dynamic>> _listFromJson(Object? value) {
   if (value is List) {
-    return value.whereType<Map<String, dynamic>>().toList();
+    return [
+      for (final item in value)
+        if (item is Map) Map<String, dynamic>.from(item),
+    ];
   }
   return const [];
 }
@@ -175,7 +204,12 @@ String? _readFirstImageUrl(Object? value) {
   if (value is List && value.isNotEmpty) {
     final first = value.first;
     if (first is Map) {
-      return (first['url'] ?? first['imageUrl'] ?? first['src'])?.toString();
+      return (first['url'] ??
+              first['imageUrl'] ??
+              first['src'] ??
+              first['path'] ??
+              first['secureUrl'])
+          ?.toString();
     }
     return first?.toString();
   }

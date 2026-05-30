@@ -41,45 +41,54 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget build(BuildContext context) {
     final trimmed = query.trim();
     final products = trimmed.isEmpty
-        ? ref.watch(productsProvider(const ProductQuery(limit: 20)))
-        : ref.watch(productsProvider(ProductQuery(search: trimmed, limit: 30)));
+        ? ref.watch(productsProvider(const ProductQuery(limit: 200)))
+        : ref
+            .watch(productsProvider(ProductQuery(search: trimmed, limit: 200)));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F5EF),
+      backgroundColor: const Color(0xFFF7F4EE),
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+                  padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
                   child: Row(
                     children: [
                       const AppBackButton(),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: SearchBar(
-                          controller: _controller,
-                          hintText: 'Search plywood, hinges, pipes...',
-                          leading: const Icon(Icons.search),
-                          autoFocus: true,
-                          elevation: const WidgetStatePropertyAll(0),
-                          backgroundColor:
-                              const WidgetStatePropertyAll(Color(0xFFFFFCF6)),
-                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14))),
-                          trailing: [
-                            if (query.isNotEmpty)
-                              IconButton(
-                                tooltip: 'Clear',
-                                onPressed: () => setState(() {
-                                  _controller.clear();
-                                  query = '';
-                                }),
-                                icon: const Icon(Icons.close),
-                              ),
-                          ],
-                          onChanged: (value) => setState(() => query = value),
+                        child: SizedBox(
+                          height: 58,
+                          child: SearchBar(
+                            controller: _controller,
+                            hintText: 'Search plywood, hinges, pipes...',
+                            leading: const Icon(Icons.search),
+                            autoFocus: false,
+                            elevation: const WidgetStatePropertyAll(0),
+                            padding: const WidgetStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 14),
+                            ),
+                            backgroundColor:
+                                const WidgetStatePropertyAll(Colors.white),
+                            shape:
+                                WidgetStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            )),
+                            trailing: [
+                              if (query.isNotEmpty)
+                                IconButton(
+                                  tooltip: 'Clear',
+                                  onPressed: () => setState(() {
+                                    _controller.clear();
+                                    query = '';
+                                  }),
+                                  icon: const Icon(Icons.close),
+                                ),
+                            ],
+                            onChanged: (value) => setState(() => query = value),
+                          ),
                         ),
                       ),
                     ],
@@ -90,14 +99,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     decoration: const BoxDecoration(
                       color: Color(0xFFEAF4F2),
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(26)),
+                          BorderRadius.vertical(top: Radius.circular(28)),
                     ),
                     child: AsyncValueView(
                       value: products,
                       onRetry: () => ref.invalidate(trimmed.isEmpty
-                          ? productsProvider(const ProductQuery(limit: 20))
+                          ? productsProvider(const ProductQuery(limit: 200))
                           : productsProvider(
-                              ProductQuery(search: trimmed, limit: 30))),
+                              ProductQuery(search: trimmed, limit: 200))),
                       data: (page) => _SearchResults(products: page.items),
                     ),
                   ),
@@ -131,12 +140,12 @@ class _SearchResults extends ConsumerWidget {
             : 2;
     final bottomPadding = MediaQuery.paddingOf(context).bottom + 110;
     return GridView.builder(
-      padding: EdgeInsets.fromLTRB(18, 18, 18, bottomPadding),
+      padding: EdgeInsets.fromLTRB(14, 18, 14, bottomPadding),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columns,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 18,
-        childAspectRatio: width >= 720 ? 0.68 : 0.56,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 16,
+        childAspectRatio: width >= 720 ? 0.66 : 0.56,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {

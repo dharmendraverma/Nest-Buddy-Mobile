@@ -37,6 +37,9 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       slug: json['slug'] as String,
       price: _numFromJson(_readProductPrice(json, 'price')),
+      mrp: _readProductMrp(json, 'mrp') == null
+          ? 0
+          : _numFromJson(_readProductMrp(json, 'mrp')),
       shortDescription: json['shortDescription'] as String?,
       description: json['description'] as String?,
       unit: json['unit'] as String?,
@@ -59,6 +62,7 @@ Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
       'name': instance.name,
       'slug': instance.slug,
       'price': instance.price,
+      'mrp': instance.mrp,
       'shortDescription': instance.shortDescription,
       'description': instance.description,
       'unit': instance.unit,
@@ -91,6 +95,9 @@ _$ProductVariantImpl _$$ProductVariantImplFromJson(Map<String, dynamic> json) =>
       sku: json['sku'] as String,
       name: json['name'] as String,
       price: _numFromJson(_readVariantPrice(json, 'price')),
+      mrp: _readVariantMrp(json, 'mrp') == null
+          ? 0
+          : _numFromJson(_readVariantMrp(json, 'mrp')),
       quantity: _readVariantQuantity(json, 'quantity') == null
           ? 0
           : _numFromJson(_readVariantQuantity(json, 'quantity')),
@@ -106,6 +113,7 @@ Map<String, dynamic> _$$ProductVariantImplToJson(
       'sku': instance.sku,
       'name': instance.name,
       'price': instance.price,
+      'mrp': instance.mrp,
       'quantity': instance.quantity,
       'color': instance.color,
       'size': instance.size,
